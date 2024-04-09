@@ -57,7 +57,19 @@ class TodoControllerTest @Autowired constructor(
         verify(repo).new(TodoItem(description = "testDescription", createdAt = NOW, dueAt = DUE, doneAt = null))
     }
 
+    @Test
+    fun dueDateMustNotBeInThePast() {
+        // Given
+        whenever(timeProvider.now()).thenReturn(NOW)
+        val dueInThePast = NOW.minusSeconds(5)
 
+
+        // When
+        createTodoItem(due = dueInThePast)
+            .andExpect(status().isBadRequest)
+
+        // Then
+    }
 
     private fun createTodoItem(due: Instant) = mvc.perform(
         post("/todo")
