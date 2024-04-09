@@ -2,9 +2,11 @@ package com.example.todoservice
 
 import com.example.todoservice.core.TodoItem
 import com.example.todoservice.core.TodoRepository
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.any
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -15,9 +17,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.DAYS
-import java.time.temporal.ChronoUnit.SECONDS
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -29,6 +29,11 @@ class TodoControllerTest @Autowired constructor(
     private val timeProvider: TimeProvider,
 ) {
 
+    @AfterEach
+    fun afterEach() {
+        verifyNoMoreInteractions(repo)
+    }
+
     @Test
     fun createTodoHappyCase() {
         // Given
@@ -36,14 +41,7 @@ class TodoControllerTest @Autowired constructor(
         whenever(repo.new(any())).thenReturn(TodoItem(description = "testDescription", createdAt = NOW, dueAt = DUE))
 
         // When
-        mvc.perform(post("/todo")
-            .contentType("application/json")
-            .content("""
-                {
-                    "description":"testDescription",
-                    "dueAt": "$DUE"
-                }
-                """.trimIndent()))
+        createTodoItem(due = DUE)
             .andExpect(status().isCreated)
             .andExpect(content().json("""
                 {
@@ -58,6 +56,21 @@ class TodoControllerTest @Autowired constructor(
         // Then
         verify(repo).new(TodoItem(description = "testDescription", createdAt = NOW, dueAt = DUE, doneAt = null))
     }
+
+
+
+    private fun createTodoItem(due: Instant) = mvc.perform(
+        post("/todo")
+            .contentType("application/json")
+            .content(
+                """
+                    {
+                        "description":"testDescription",
+                        "dueAt": "$due"
+                    }
+                    """.trimIndent()
+            )
+    )
 
     companion object {
         private val NOW = Instant.now()
