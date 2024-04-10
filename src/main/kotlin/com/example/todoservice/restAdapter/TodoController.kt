@@ -51,6 +51,6 @@ class TodoController @Autowired constructor(
     }
 
     companion object {
-        private val LOG = LoggerFactory.getLogger(javaClass)
+        private val LOG = LoggerFactory.getLogger(TodoController::class.java)
     }
 }
