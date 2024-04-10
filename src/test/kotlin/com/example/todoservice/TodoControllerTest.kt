@@ -113,6 +113,18 @@ class TodoControllerTest @Autowired constructor(
         // Then
     }
 
+    @Test
+    fun getTodoItemShouldReturn404IfItemIsNotFound() {
+        // Given
+        val id = UUID.randomUUID()
+
+        // When
+        mvc.perform(get("/todos/$id"))
+            .andExpect(status().isNotFound)
+
+        // Then
+    }
+
     private fun createTodoItem(due: Instant) =
         createTodoItem(
                 """
