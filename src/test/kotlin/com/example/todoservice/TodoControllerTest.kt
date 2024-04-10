@@ -30,6 +30,8 @@ class TodoControllerTest @Autowired constructor(
     private val repo: TodoRepository,
     @MockBean
     private val timeProvider: TimeProvider,
+    @MockBean
+    private val uuidProvider: UuidProvider,
 ) {
 
     @AfterEach
@@ -41,7 +43,7 @@ class TodoControllerTest @Autowired constructor(
     fun createTodoHappyCase() {
         // Given
         whenever(timeProvider.now()).thenReturn(NOW)
-        whenever(repo.new(any())).thenReturn(TodoItem(description = "testDescription", createdAt = NOW, dueAt = DUE))
+        whenever(uuidProvider.randomUuid()).thenReturn(RANDOM_UUID)
 
         // When
         createTodoItem(due = DUE)
@@ -55,9 +57,10 @@ class TodoControllerTest @Autowired constructor(
                     "doneAt": null
                 }
             """.trimIndent()))
+            .andExpect(header().string("Location", "/todo/$RANDOM_UUID"))
 
         // Then
-        verify(repo).new(TodoItem(description = "testDescription", createdAt = NOW, dueAt = DUE, doneAt = null))
+        verify(repo).new(TodoItem(description = "testDescription", createdAt = NOW, dueAt = DUE, doneAt = null, id = RANDOM_UUID))
     }
 
     @Test

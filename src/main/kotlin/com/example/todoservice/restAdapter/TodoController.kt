@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.*
 
 @RestController
 @RequestMapping("/todo")
@@ -29,10 +30,12 @@ class TodoController @Autowired constructor(
         }
 
         val todoItem = TodoItem(
+            id = UUID.randomUUID(),
             description = dto.description,
             createdAt = now,
-            dueAt = dto.dueAt
+            dueAt = dto.dueAt,
         )
+
         val newTodoItem = repo.new(todoItem)
         return ResponseEntity.status(CREATED)
             .body(TodoItemDto.from(newTodoItem, now))

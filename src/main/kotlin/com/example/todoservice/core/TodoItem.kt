@@ -4,8 +4,10 @@ import com.example.todoservice.core.TodoItemStatus.DONE
 import com.example.todoservice.core.TodoItemStatus.NOT_DONE
 import com.example.todoservice.core.TodoItemStatus.PAST_DUE
 import java.time.Instant
+import java.util.*
 
 data class TodoItem(
+    val id: UUID,
     val description: String,
     val createdAt: Instant,
     val dueAt: Instant,
