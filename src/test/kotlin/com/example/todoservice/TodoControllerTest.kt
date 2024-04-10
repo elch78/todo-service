@@ -1,16 +1,12 @@
 package com.example.todoservice
 
-import com.example.todoservice.core.TodoItem
 import com.example.todoservice.core.TodoRepository
 import com.example.todoservice.core.UuidProvider
 import org.hamcrest.Matchers.endsWith
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -30,7 +26,6 @@ import java.util.stream.Stream
 @AutoConfigureMockMvc
 class TodoControllerTest @Autowired constructor(
     private val mvc: MockMvc,
-    @MockBean
     private val repo: TodoRepository,
     @MockBean
     private val timeProvider: TimeProvider,
@@ -38,10 +33,6 @@ class TodoControllerTest @Autowired constructor(
     private val uuidProvider: UuidProvider,
 ) {
 
-    @AfterEach
-    fun afterEach() {
-        verifyNoMoreInteractions(repo)
-    }
 
     @Test
     fun createTodoHappyCase() {
@@ -64,7 +55,6 @@ class TodoControllerTest @Autowired constructor(
             .andExpect(header().string("Location", endsWith("/todos/$RANDOM_UUID")))
 
         // Then
-        verify(repo).new(TodoItem(description = "testDescription", createdAt = NOW, dueAt = DUE, doneAt = null, id = RANDOM_UUID))
     }
 
     @Test

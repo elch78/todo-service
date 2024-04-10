@@ -1,0 +1,7 @@
+CREATE TABLE todo_item (
+  id VARCHAR(36) PRIMARY KEY,
+  description VARCHAR(255) NOT NULL,
+  created_at DATETIME NOT NULL,
+  due_at DATETIME NOT NULL,
+  done_at DATETIME DEFAULT NULL
+);

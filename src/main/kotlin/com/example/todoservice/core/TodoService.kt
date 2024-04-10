@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service
 class TodoService @Autowired constructor(
     private val repo: TodoRepository
 ) {
-    fun new(todo: TodoItem): TodoItem {
+    fun new(todo: TodoItem) {
         return repo.new(todo)
     }
 }
