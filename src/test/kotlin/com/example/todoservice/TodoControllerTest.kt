@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
@@ -80,6 +81,21 @@ class TodoControllerTest @Autowired constructor(
         // When
         createTodoItem(invalidBody)
             .andExpect(status().isBadRequest)
+
+        // Then
+    }
+
+
+    @Test
+    fun getTodoItemHappyCase() {
+        // Given
+        val id = UUID.randomUUID()
+        whenever(uuidProvider.randomUuid()).thenReturn(id)
+
+        // When
+        createTodoItem(DUE)
+        mvc.perform(get("/todos/$id"))
+            .andExpect(status().isOk)
 
         // Then
     }
