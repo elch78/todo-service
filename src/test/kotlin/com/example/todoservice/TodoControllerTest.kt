@@ -91,6 +91,7 @@ class TodoControllerTest @Autowired constructor(
         // Given
         val id = UUID.randomUUID()
         whenever(uuidProvider.randomUuid()).thenReturn(id)
+        whenever(timeProvider.now()).thenReturn(NOW)
 
         // When
         createTodoItem(DUE)

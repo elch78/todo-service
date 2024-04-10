@@ -4,6 +4,7 @@ import com.example.todoservice.core.TodoItem
 import com.example.todoservice.core.TodoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class SqlTodoItemRepository @Autowired constructor(
@@ -11,5 +12,9 @@ class SqlTodoItemRepository @Autowired constructor(
 ): TodoRepository {
     override fun new(todo: TodoItem) {
         repository.insert(id = todo.id, description = todo.description, createdAt = todo.createdAt, dueAt = todo.dueAt)
+    }
+
+    override fun findById(id: UUID): Optional<TodoItem> {
+        TODO("Not yet implemented")
     }
 }
