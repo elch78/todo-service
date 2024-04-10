@@ -61,7 +61,7 @@ class TodoControllerTest @Autowired constructor(
                     "doneAt": null
                 }
             """.trimIndent()))
-            .andExpect(header().string("Location", endsWith("/todo/$RANDOM_UUID")))
+            .andExpect(header().string("Location", endsWith("/todos/$RANDOM_UUID")))
 
         // Then
         verify(repo).new(TodoItem(description = "testDescription", createdAt = NOW, dueAt = DUE, doneAt = null, id = RANDOM_UUID))
@@ -105,7 +105,7 @@ class TodoControllerTest @Autowired constructor(
             )
 
     private fun createTodoItem(content: String) = mvc.perform(
-        post("/todo")
+        post("/todos")
             .contentType("application/json")
             .content(content)
     )

@@ -19,7 +19,7 @@ import java.net.URI
 
 
 @RestController
-@RequestMapping("/todo")
+@RequestMapping("/todos")
 class TodoController @Autowired constructor(
     private val repo: TodoRepository,
     private val timeProvider: TimeProvider,
