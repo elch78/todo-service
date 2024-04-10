@@ -98,6 +98,16 @@ class TodoControllerTest @Autowired constructor(
         createTodoItem(DUE)
         mvc.perform(get("/todos/$id"))
             .andExpect(status().isOk)
+            .andExpect(content().json("""
+                {
+                    id: "$id",
+                    "description":"testDescription",
+                    "dueAt": "$DUE",
+                    "createdAt": "$NOW",
+                    "status": "NOT_DONE",
+                    "doneAt": null
+                }
+            """.trimIndent(), true))
 
         // Then
     }
