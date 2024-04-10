@@ -46,6 +46,7 @@ class TodoControllerTest @Autowired constructor(
             .andExpect(status().isCreated)
             .andExpect(content().json("""
                 {
+                    id: "$RANDOM_UUID",
                     "description":"testDescription",
                     "dueAt": "$DUE",
                     "createdAt": "$NOW",

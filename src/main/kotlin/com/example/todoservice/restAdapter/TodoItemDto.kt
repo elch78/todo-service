@@ -3,8 +3,10 @@ package com.example.todoservice.restAdapter
 import com.example.todoservice.core.TodoItem
 import com.example.todoservice.core.TodoItemStatus
 import java.time.Instant
+import java.util.*
 
 class TodoItemDto(
+    val id: UUID,
     val description: String,
     val dueAt: Instant,
     val createdAt: Instant,
@@ -13,6 +15,7 @@ class TodoItemDto(
 ) {
     companion object {
         fun from(todoItem: TodoItem, currentTime: Instant) = TodoItemDto(
+            id = todoItem.id,
             description = todoItem.description,
             dueAt = todoItem.dueAt,
             createdAt = todoItem.createdAt,
