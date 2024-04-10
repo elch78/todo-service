@@ -14,7 +14,5 @@ class SqlTodoItemRepository @Autowired constructor(
         repository.insert(id = todo.id, description = todo.description, createdAt = todo.createdAt, dueAt = todo.dueAt)
     }
 
-    override fun findById(id: UUID): Optional<TodoItem> {
-        TODO("Not yet implemented")
-    }
+    override fun findById(id: UUID): Optional<TodoItem> = repository.findById(id)
 }

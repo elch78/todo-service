@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.DAYS
 import java.util.*
 import java.util.stream.Stream
@@ -129,7 +130,7 @@ class TodoControllerTest @Autowired constructor(
     )
 
     companion object {
-        private val NOW = Instant.now()
+        private val NOW = Instant.now().truncatedTo(ChronoUnit.MILLIS)
         private val RANDOM_UUID = UUID.randomUUID()
         private val DUE = NOW.plus(3, DAYS)
 

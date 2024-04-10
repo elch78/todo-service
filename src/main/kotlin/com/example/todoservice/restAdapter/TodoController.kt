@@ -28,6 +28,9 @@ class TodoController @Autowired constructor(
     private val timeProvider: TimeProvider,
     private val uuidProvider: UuidProvider,
 ) {
+    /**
+     * due date is truncated to millis due to H2 data type
+     */
     @PostMapping(consumes = ["application/json"], produces = ["application/json"])
     fun new(@RequestBody dto: NewTodoDto): ResponseEntity<TodoItemDto> {
         LOG.debug("Create todo item dto='{}'", dto)
@@ -54,7 +57,11 @@ class TodoController @Autowired constructor(
     }
 
     @GetMapping("/{id}", produces = ["application/json"])
-    fun get(@PathVariable id: UUID) {
+    fun get(@PathVariable id: UUID): ResponseEntity<TodoItemDto> {
+        LOG.debug("get id='{}'", id)
+        val todoItem = repo.findById(id)
+        LOG.info("get successful. id='{}'", id)
+        return ResponseEntity.ok(TodoItemDto.from(todoItem.get(), timeProvider.now()))
     }
 
     companion object {
