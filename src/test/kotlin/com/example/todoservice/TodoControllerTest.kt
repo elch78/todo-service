@@ -7,6 +7,8 @@ import org.hamcrest.Matchers.endsWith
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
@@ -22,6 +24,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.Instant
 import java.time.temporal.ChronoUnit.DAYS
 import java.util.*
+import java.util.stream.Stream
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -79,10 +82,10 @@ class TodoControllerTest @Autowired constructor(
     }
 
     @ParameterizedTest
-    fun createTodoInvalidBodyShouldReturn400() {
+    @MethodSource
+    fun createTodoInvalidBodyShouldReturn400(invalidBody: String) {
         // Given
         whenever(timeProvider.now()).thenReturn(NOW)
-        val invalidBody = "{}"
 
         // When
         createTodoItem(invalidBody)
@@ -111,5 +114,15 @@ class TodoControllerTest @Autowired constructor(
         private val NOW = Instant.now()
         private val RANDOM_UUID = UUID.randomUUID()
         private val DUE = NOW.plus(3, DAYS)
+
+        @JvmStatic
+        fun createTodoInvalidBodyShouldReturn400() = Stream.of(
+            Arguments.of("{}"),
+            Arguments.of("{description: null}"),
+            Arguments.of("{description: \"valid\"}"),
+            Arguments.of("{description: \"valid\", dueAt: null}"),
+            Arguments.of("{description: null, dueAt: \"$DUE\"}"),
+            Arguments.of("{dueAt: \"$DUE\"}"),
+        )
     }
 }
