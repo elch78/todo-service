@@ -2,9 +2,10 @@ package com.example.todoservice
 
 import com.example.todoservice.core.TodoItem
 import com.example.todoservice.core.TodoRepository
+import com.example.todoservice.core.UuidProvider
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.any
+import org.junit.jupiter.params.ParameterizedTest
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
@@ -15,9 +16,11 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.Instant
 import java.time.temporal.ChronoUnit.DAYS
+import java.util.*
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -71,10 +74,21 @@ class TodoControllerTest @Autowired constructor(
         // Then
     }
 
-    private fun createTodoItem(due: Instant) = mvc.perform(
-        post("/todo")
-            .contentType("application/json")
-            .content(
+    @ParameterizedTest
+    fun createTodoInvalidBodyShouldReturn400() {
+        // Given
+        whenever(timeProvider.now()).thenReturn(NOW)
+        val invalidBody = "{}"
+
+        // When
+        createTodoItem(invalidBody)
+            .andExpect(status().isBadRequest)
+
+        // Then
+    }
+
+    private fun createTodoItem(due: Instant) =
+        createTodoItem(
                 """
                     {
                         "description":"testDescription",
@@ -82,10 +96,16 @@ class TodoControllerTest @Autowired constructor(
                     }
                     """.trimIndent()
             )
+
+    private fun createTodoItem(content: String) = mvc.perform(
+        post("/todo")
+            .contentType("application/json")
+            .content(content)
     )
 
     companion object {
         private val NOW = Instant.now()
+        private val RANDOM_UUID = UUID.randomUUID()
         private val DUE = NOW.plus(3, DAYS)
     }
 }
