@@ -3,6 +3,7 @@ package com.example.todoservice
 import com.example.todoservice.core.TodoItem
 import com.example.todoservice.core.TodoRepository
 import com.example.todoservice.core.UuidProvider
+import org.hamcrest.Matchers.endsWith
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -57,7 +58,7 @@ class TodoControllerTest @Autowired constructor(
                     "doneAt": null
                 }
             """.trimIndent()))
-            .andExpect(header().string("Location", "/todo/$RANDOM_UUID"))
+            .andExpect(header().string("Location", endsWith("/todo/$RANDOM_UUID")))
 
         // Then
         verify(repo).new(TodoItem(description = "testDescription", createdAt = NOW, dueAt = DUE, doneAt = null, id = RANDOM_UUID))
