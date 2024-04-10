@@ -6,6 +6,7 @@ import com.example.todoservice.core.TodoRepository
 import com.example.todoservice.core.UuidProvider
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
@@ -60,8 +61,9 @@ class TodoController @Autowired constructor(
     fun get(@PathVariable id: UUID): ResponseEntity<TodoItemDto> {
         LOG.debug("get id='{}'", id)
         val todoItem = repo.findById(id)
+            .orElseThrow { ErrorResponseException(HttpStatus.NOT_FOUND, ProblemDetail.forStatusAndDetail(BAD_REQUEST, "No todo item with id $id" ), null) }
         LOG.info("get successful. id='{}'", id)
-        return ResponseEntity.ok(TodoItemDto.from(todoItem.get(), timeProvider.now()))
+        return ResponseEntity.ok(TodoItemDto.from(todoItem, timeProvider.now()))
     }
 
     companion object {
