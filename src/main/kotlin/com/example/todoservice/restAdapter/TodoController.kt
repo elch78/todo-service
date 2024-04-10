@@ -4,6 +4,7 @@ import com.example.todoservice.TimeProvider
 import com.example.todoservice.core.TodoItem
 import com.example.todoservice.core.TodoRepository
 import com.example.todoservice.core.UuidProvider
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.ProblemDetail
@@ -26,7 +27,7 @@ class TodoController @Autowired constructor(
 ) {
     @PostMapping(consumes = ["application/json"], produces = ["application/json"])
     fun new(@RequestBody dto: NewTodoDto): ResponseEntity<TodoItemDto> {
-
+        LOG.debug("Create todo item dto='{}'", dto)
         val now = timeProvider.now();
         if(dto.dueAt.isBefore(now)) {
             throw ErrorResponseException(BAD_REQUEST, ProblemDetail.forStatusAndDetail(BAD_REQUEST, "dueAt must not be in the past: ${dto.dueAt}" ), null)
@@ -44,7 +45,12 @@ class TodoController @Autowired constructor(
             .path("/{id}")
             .buildAndExpand(todoItem.id)
             .toUri()
+        LOG.info("Todo item created todoItem='{}'", todoItem)
         return ResponseEntity.created(location)
             .body(TodoItemDto.from(todoItem, now))
+    }
+
+    companion object {
+        private val LOG = LoggerFactory.getLogger(javaClass)
     }
 }
