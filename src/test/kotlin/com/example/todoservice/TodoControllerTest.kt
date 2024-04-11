@@ -47,7 +47,7 @@ class TodoControllerTest @Autowired constructor(
     @Test
     fun createTodoHappyCase() {
         // Given
-        whenever(timeProvider.now()).thenReturn(NOW)
+        withCurrentTime(NOW)
         whenever(uuidProvider.randomUuid()).thenReturn(RANDOM_UUID)
 
         // When
@@ -71,7 +71,7 @@ class TodoControllerTest @Autowired constructor(
     @Test
     fun dueDateMustNotBeInThePast() {
         // Given
-        whenever(timeProvider.now()).thenReturn(NOW)
+        withCurrentTime(NOW)
         val dueInThePast = NOW.minusSeconds(5)
 
 
@@ -86,7 +86,7 @@ class TodoControllerTest @Autowired constructor(
     @MethodSource
     fun createTodoInvalidBodyShouldReturn400(invalidBody: String) {
         // Given
-        whenever(timeProvider.now()).thenReturn(NOW)
+        withCurrentTime(NOW)
 
         // When
         createTodoItem(invalidBody)
@@ -101,7 +101,7 @@ class TodoControllerTest @Autowired constructor(
         // Given
         val id = UUID.randomUUID()
         whenever(uuidProvider.randomUuid()).thenReturn(id)
-        whenever(timeProvider.now()).thenReturn(NOW)
+        withCurrentTime(NOW)
 
         // When
         createTodoItem(DUE)
@@ -138,7 +138,7 @@ class TodoControllerTest @Autowired constructor(
         // Given
         val id = UUID.randomUUID()
         whenever(uuidProvider.randomUuid()).thenReturn(id)
-        whenever(timeProvider.now()).thenReturn(NOW)
+        withCurrentTime(NOW)
 
         // When
         createTodoItem(DUE)
@@ -153,13 +153,13 @@ class TodoControllerTest @Autowired constructor(
         // Given
         val id = UUID.randomUUID()
         whenever(uuidProvider.randomUuid()).thenReturn(id)
-        whenever(timeProvider.now()).thenReturn(NOW)
+        withCurrentTime(NOW)
 
         // When
         createTodoItem(DUE)
 
         // Given
-        whenever(timeProvider.now()).thenReturn(DUE.plus(1, MINUTES))
+        withCurrentTime(DUE.plus(1, MINUTES))
         markDone(id).andExpect(status().isConflict)
     }
 
@@ -168,7 +168,7 @@ class TodoControllerTest @Autowired constructor(
         // Given
         val id = UUID.randomUUID()
         whenever(uuidProvider.randomUuid()).thenReturn(id)
-        whenever(timeProvider.now()).thenReturn(NOW)
+        withCurrentTime(NOW)
 
         // When
         createTodoItem(DUE)
@@ -183,14 +183,18 @@ class TodoControllerTest @Autowired constructor(
         // Given
         val id = UUID.randomUUID()
         whenever(uuidProvider.randomUuid()).thenReturn(id)
-        whenever(timeProvider.now()).thenReturn(NOW)
+        withCurrentTime(NOW)
 
         // When
         createTodoItem(DUE)
         markDone(id)
 
-        whenever(timeProvider.now()).thenReturn(DUE.plus(1, MINUTES))
+        withCurrentTime(DUE.plus(1, MINUTES))
         markUndone(id).andExpect(status().isConflict)
+    }
+
+    private fun withCurrentTime(currentTime: Instant?) {
+        whenever(timeProvider.now()).thenReturn(currentTime)
     }
 
     private fun markUndone(id: UUID?) = mvc.perform(patch("/todos/$id/mark_undone"))
