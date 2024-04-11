@@ -228,14 +228,14 @@ class TodoControllerTest @Autowired constructor(
             .contentType("application/json")
             .content("""
                 {
-                    "description": "$newDescription"
+                    "newDescription": "$newDescription"
                 }
             """.trimIndent()))
             .andExpect(status().isOk)
-        getTodoItem(id)
-            .andExpect(jsonPath("$.description", `is`("$newDescription")))
 
         // Then
+        getTodoItem(id)
+            .andExpect(jsonPath("$.description", `is`("$newDescription")))
     }
 
     private fun withCurrentTime(currentTime: Instant?) {

@@ -50,8 +50,7 @@ class TodoService @Autowired constructor(
     @Transactional
     fun markDone(id: UUID, doneAt: Instant?) {
         LOG.debug("markDone id='{}', doneAt='{}'", id, doneAt)
-        val todoItem = findById(id)
-            .orElseThrow{ error(NOT_FOUND, "Todo item not found: $id") }
+        val todoItem = mustFindById(id)
 
         checkDueDate(todoItem)
 
@@ -63,8 +62,7 @@ class TodoService @Autowired constructor(
     @Transactional
     fun markUndone(id: UUID) {
         LOG.debug("markUndone id='{}'", id)
-        val todoItem = findById(id)
-            .orElseThrow{ error(NOT_FOUND, "Todo item not found: $id") }
+        val todoItem = mustFindById(id)
 
         checkDueDate(todoItem)
 
@@ -72,6 +70,21 @@ class TodoService @Autowired constructor(
         repo.save(todoItem)
         LOG.info("markUndone successful id='{}'", id)
     }
+
+    @Transactional
+    fun rephrase(id: UUID, newDescription: String) {
+        LOG.debug("rephrase id='{}', newDescription='{}'", id, newDescription)
+        val todoItem = mustFindById(id)
+
+        checkDueDate(todoItem)
+
+        todoItem.rephrase(newDescription)
+        repo.save(todoItem)
+        LOG.info("rephrase successful id='{}', newDescription='{}'", id, newDescription)
+    }
+
+    private fun mustFindById(id: UUID): TodoItem = findById(id)
+        .orElseThrow { error(NOT_FOUND, "Todo item not found: $id") }
 
     private fun error(httpStatus: HttpStatus, detail: String) =
         ErrorResponseException(httpStatus, ProblemDetail.forStatusAndDetail(httpStatus, detail), null)

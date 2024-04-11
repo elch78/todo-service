@@ -32,7 +32,7 @@ class TodoController @Autowired constructor(
      */
     @PostMapping(consumes = ["application/json"], produces = ["application/json"])
     fun new(@RequestBody dto: NewTodoDto): ResponseEntity<TodoItemDto> {
-        LOG.debug("Create todo item dto='{}'", dto)
+        LOG.debug("Create todo item. dto='{}'", dto)
         val now = timeProvider.now();
 
         val todoItem = todoService.new(dto.description, dto.dueAt)
@@ -40,7 +40,7 @@ class TodoController @Autowired constructor(
             .path("/{id}")
             .buildAndExpand(todoItem.id)
             .toUri()
-        LOG.info("Todo item created todoItem='{}'", todoItem)
+        LOG.info("Todo item created. todoItem='{}'", todoItem)
         return ResponseEntity.created(location)
             .body(TodoItemDto.from(todoItem, now))
     }
@@ -62,12 +62,21 @@ class TodoController @Autowired constructor(
     fun markDone(@PathVariable id: UUID, @RequestBody dto: MarkDoneDto?) {
         LOG.debug("markDone id='{}', dto='{}'", id, dto)
         todoService.markDone(id, dto?.doneAt?:null)
-        LOG.debug("markDone doneAt='{}'", dto?.doneAt)
+        LOG.info("markDone successful. doneAt='{}'", dto?.doneAt)
     }
 
     @PatchMapping("/{id}/mark_undone")
     fun markUndone(@PathVariable id: UUID) {
         LOG.debug("markDone id='{}'", id)
         todoService.markUndone(id)
+        LOG.info("markUndone successful. id='{}'", id)
+    }
+
+    @PatchMapping("/{id}/rephrase", consumes = ["application/json"])
+    fun rephrase(@PathVariable id: UUID, @RequestBody dto: RephraseDto) {
+        val newDescription = dto.newDescription
+        LOG.debug("rephrase id='{}, newDescription='{}''", id, newDescription)
+        todoService.rephrase(id, newDescription)
+        LOG.info("rephrase successful. id='{}', newDescription='{}''", id, newDescription)
     }
 }

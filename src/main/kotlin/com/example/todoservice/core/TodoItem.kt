@@ -10,7 +10,7 @@ import java.util.*
 class TodoItem(
     @Id
     val id: UUID,
-    val description: String,
+    var description: String,
     val createdAt: Instant,
     val dueAt: Instant,
     var doneAt: Instant? = null
@@ -28,6 +28,10 @@ class TodoItem(
         doneAt == null && currentTime.isAfter(dueAt) -> PAST_DUE
         doneAt == null -> NOT_DONE
         else -> DONE
+    }
+
+    fun rephrase(newDescription: String) {
+        description = newDescription
     }
 
     override fun toString(): String {
