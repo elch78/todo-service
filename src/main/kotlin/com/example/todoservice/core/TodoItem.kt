@@ -29,4 +29,8 @@ class TodoItem(
         doneAt == null -> NOT_DONE
         else -> DONE
     }
+
+    override fun toString(): String {
+        return "TodoItem(id=$id, description='$description', createdAt=$createdAt, dueAt=$dueAt, doneAt=$doneAt)"
+    }
 }
