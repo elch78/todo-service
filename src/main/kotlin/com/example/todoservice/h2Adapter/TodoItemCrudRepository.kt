@@ -17,4 +17,8 @@ interface TodoItemCrudRepository: CrudRepository<TodoItem, UUID> {
     @Modifying
     @Query("UPDATE todo_item SET done_at = :doneAt WHERE id = :id")
     fun markDone(id: UUID, doneAt: Instant)
+
+    @Modifying
+    @Query("UPDATE todo_item SET done_at = null WHERE id = :id")
+    fun markUndone(id: UUID)
 }

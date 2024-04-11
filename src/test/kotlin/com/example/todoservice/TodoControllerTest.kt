@@ -166,7 +166,7 @@ class TodoControllerTest @Autowired constructor(
     private fun expectTodoItemStatus(id: UUID, status: TodoItemStatus, doneAt: Instant?) {
         getTodoItem(id)
             .andExpect(jsonPath("$.status", `is`("$status")))
-            .andExpect(jsonPath("$.doneAt", `is`("$doneAt")))
+            .andExpect(jsonPath("$.doneAt", `is`(if (doneAt == null) null else "$doneAt")))
     }
 
     private fun createTodoItem(due: Instant) =

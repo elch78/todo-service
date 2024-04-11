@@ -78,4 +78,10 @@ class TodoController @Autowired constructor(
         LOG.debug("markDone doneAt='{}'", doneAt)
         repo.markDone(id, doneAt)
     }
+
+    @PatchMapping("/{id}/mark_undone")
+    fun markUndone(@PathVariable id: UUID) {
+        LOG.debug("markDone id='{}'", id)
+        repo.markUndone(id)
+    }
 }

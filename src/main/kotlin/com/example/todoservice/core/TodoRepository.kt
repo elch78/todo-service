@@ -7,4 +7,5 @@ interface TodoRepository {
     fun new(todo: TodoItem)
     fun findById(id: UUID): Optional<TodoItem>
     fun markDone(id: UUID, doneAt: Instant)
+    fun markUndone(id: UUID)
 }

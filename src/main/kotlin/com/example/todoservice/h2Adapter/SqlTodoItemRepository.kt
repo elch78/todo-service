@@ -20,4 +20,8 @@ class SqlTodoItemRepository @Autowired constructor(
     override fun markDone(id: UUID, doneAt: Instant) {
         repository.markDone(id, doneAt)
     }
+
+    override fun markUndone(id: UUID) {
+        repository.markUndone(id)
+    }
 }
