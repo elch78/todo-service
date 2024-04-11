@@ -204,6 +204,16 @@ class TodoControllerTest @Autowired constructor(
         markUndone(id).andExpect(status().isConflict)
     }
 
+    @Test
+    fun markUndoneShouldReturn404IfTodoItemDoesNotExist() {
+        // Given
+        val id = UUID.randomUUID()
+
+        // When
+        markUndone(id)
+            .andExpect(status().isNotFound)
+    }
+
     private fun withCurrentTime(currentTime: Instant?) {
         whenever(timeProvider.now()).thenReturn(currentTime)
     }
