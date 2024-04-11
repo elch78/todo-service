@@ -3,6 +3,7 @@ package com.example.todoservice.core
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.ProblemDetail
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -49,9 +50,18 @@ class TodoService @Autowired constructor(
         LOG.debug("markDone id='{}', doneAt='{}'", id, doneAt)
         // FIXME not found
         val todoItem = findById(id).get()
+
+        checkDueDate(todoItem)
+
         todoItem.markDone(doneAt?:timeProvider.now())
         repo.save(todoItem)
         LOG.info("markDone successful id='{}'", id)
+    }
+
+    private fun checkDueDate(todoItem: TodoItem) {
+        if(todoItem.dueAt.isBefore(timeProvider.now())) {
+            throw ErrorResponseException(CONFLICT, ProblemDetail.forStatusAndDetail(CONFLICT, "Todo item may not be changed past due date: ${todoItem.dueAt}"), null)
+        }
     }
 
     @Transactional
