@@ -10,7 +10,7 @@ spring:
       driverClassName: org.h2.Driver
     flyway:
       enabled: true
-debug: true
+debug: false
 
 
 
