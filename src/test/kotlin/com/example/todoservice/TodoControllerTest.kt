@@ -161,8 +161,6 @@ class TodoControllerTest @Autowired constructor(
         // Given
         whenever(timeProvider.now()).thenReturn(DUE.plus(1, MINUTES))
         markDone(id).andExpect(status().isConflict)
-
-        // Then
     }
 
     @Test
@@ -175,11 +173,27 @@ class TodoControllerTest @Autowired constructor(
         // When
         createTodoItem(DUE)
         markDone(id)
-        mvc.perform(patch("/todos/$id/mark_undone")).andExpect(status().isOk)
+        markUndone(id)
+            .andExpect(status().isOk)
         expectTodoItemStatus(id, NOT_DONE, null)
-
-        // Then
     }
+
+    @Test
+    fun markUndoneShouldReturn409IfDueDateIsInThePast() {
+        // Given
+        val id = UUID.randomUUID()
+        whenever(uuidProvider.randomUuid()).thenReturn(id)
+        whenever(timeProvider.now()).thenReturn(NOW)
+
+        // When
+        createTodoItem(DUE)
+        markDone(id)
+
+        whenever(timeProvider.now()).thenReturn(DUE.plus(1, MINUTES))
+        markUndone(id).andExpect(status().isConflict)
+    }
+
+    private fun markUndone(id: UUID?) = mvc.perform(patch("/todos/$id/mark_undone"))
 
     private fun expectTodoItemStatus(id: UUID, status: TodoItemStatus, doneAt: Instant?) {
         getTodoItem(id)
