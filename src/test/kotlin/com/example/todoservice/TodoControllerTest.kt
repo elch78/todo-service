@@ -3,6 +3,7 @@ package com.example.todoservice
 import com.example.todoservice.core.TimeProvider
 import com.example.todoservice.core.TodoItemStatus
 import com.example.todoservice.core.TodoItemStatus.DONE
+import com.example.todoservice.core.TodoItemStatus.NOT_DONE
 import com.example.todoservice.core.TodoRepository
 import com.example.todoservice.core.UuidProvider
 import org.hamcrest.Matchers.endsWith
@@ -140,15 +141,24 @@ class TodoControllerTest @Autowired constructor(
 
         // When
         createTodoItem(DUE)
-        mvc.perform(patch("/todos/$id/mark_done")
-            .contentType("application/json")
-            .content("""
-                {
-                    "doneAt": null
-                }
-            """.trimIndent()))
-            .andExpect(status().isOk)
+        markDone(id).andExpect(status().isOk)
         expectTodoItemStatus(id, DONE, NOW)
+
+        // Then
+    }
+
+    @Test
+    fun markUndoneHappyCase() {
+        // Given
+        val id = UUID.randomUUID()
+        whenever(uuidProvider.randomUuid()).thenReturn(id)
+        whenever(timeProvider.now()).thenReturn(NOW)
+
+        // When
+        createTodoItem(DUE)
+        markDone(id)
+        mvc.perform(patch("/todos/$id/mark_undone")).andExpect(status().isOk)
+        expectTodoItemStatus(id, NOT_DONE, null)
 
         // Then
     }
@@ -177,6 +187,18 @@ class TodoControllerTest @Autowired constructor(
 
 
     private fun getTodoItem(id: UUID?) = mvc.perform(get("/todos/$id"))
+
+    private fun markDone(id: UUID?) = mvc.perform(
+        patch("/todos/$id/mark_done")
+            .contentType("application/json")
+            .content(
+                """
+                    {
+                        "doneAt": null
+                    }
+                """.trimIndent()
+            )
+    )
 
     companion object {
         private val NOW = Instant.now().truncatedTo(ChronoUnit.MILLIS)
