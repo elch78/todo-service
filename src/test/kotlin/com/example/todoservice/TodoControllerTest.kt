@@ -225,6 +225,7 @@ class TodoControllerTest @Autowired constructor(
         // When
         createTodoItem(DUE)
         mvc.perform(patch("/todos/$id/rephrase")
+            .contentType("application/json")
             .content("""
                 {
                     "description": "$newDescription"
