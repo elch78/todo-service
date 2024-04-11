@@ -2,6 +2,7 @@ package com.example.todoservice.core
 
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.NOT_FOUND
@@ -24,7 +25,7 @@ class TodoService @Autowired constructor(
         val now = timeProvider.now()
 
         if(dueAt.isBefore(now)) {
-            throw ErrorResponseException(BAD_REQUEST, ProblemDetail.forStatusAndDetail(BAD_REQUEST, "dueAt must not be in the past: $dueAt" ), null)
+            throw error(BAD_REQUEST, "dueAt must not be in the past: $dueAt")
         }
 
         val todoItem = TodoItem(
@@ -50,7 +51,7 @@ class TodoService @Autowired constructor(
     fun markDone(id: UUID, doneAt: Instant?) {
         LOG.debug("markDone id='{}', doneAt='{}'", id, doneAt)
         val todoItem = findById(id)
-            .orElseThrow{ErrorResponseException(NOT_FOUND, ProblemDetail.forStatusAndDetail(NOT_FOUND, "Todo item not found: $id"), null)}
+            .orElseThrow{ error(NOT_FOUND, "Todo item not found: $id") }
 
         checkDueDate(todoItem)
 
@@ -63,7 +64,7 @@ class TodoService @Autowired constructor(
     fun markUndone(id: UUID) {
         LOG.debug("markUndone id='{}'", id)
         val todoItem = findById(id)
-            .orElseThrow{ErrorResponseException(NOT_FOUND, ProblemDetail.forStatusAndDetail(NOT_FOUND, "Todo item not found: $id"), null)}
+            .orElseThrow{ error(NOT_FOUND, "Todo item not found: $id") }
 
         checkDueDate(todoItem)
 
@@ -71,6 +72,9 @@ class TodoService @Autowired constructor(
         repo.save(todoItem)
         LOG.info("markUndone successful id='{}'", id)
     }
+
+    private fun error(httpStatus: HttpStatus, detail: String) =
+        ErrorResponseException(httpStatus, ProblemDetail.forStatusAndDetail(httpStatus, detail), null)
 
     private fun checkDueDate(todoItem: TodoItem) {
         if(todoItem.dueAt.isBefore(timeProvider.now())) {
