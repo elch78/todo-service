@@ -39,11 +39,19 @@ class TodoService @Autowired constructor(
     }
 
     fun markDone(id: UUID, doneAt: Instant?) {
-        repo.markDone(id, doneAt?:timeProvider.now())
+        // FIXME not found
+        // FIXME read + write requires transaction
+        val todoItem = findById(id).get()
+        todoItem.markDone(doneAt?:timeProvider.now())
+        repo.save(todoItem)
     }
 
     fun markUndone(id: UUID) {
-        repo.markUndone(id)
+        // FIXME not found
+        // FIXME read + write requires transaction
+        val todoItem = findById(id).get()
+        todoItem.markUndone()
+        repo.save(todoItem)
     }
 
     companion object {

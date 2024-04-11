@@ -7,14 +7,23 @@ import org.springframework.data.annotation.Id
 import java.time.Instant
 import java.util.*
 
-data class TodoItem(
+class TodoItem(
     @Id
     val id: UUID,
     val description: String,
     val createdAt: Instant,
     val dueAt: Instant,
-    val doneAt: Instant? = null
+    var doneAt: Instant? = null
 ) {
+    fun markDone(doneAt: Instant) {
+        // TODO require doneAt == null
+        this.doneAt = doneAt
+    }
+
+    fun markUndone() {
+        this.doneAt = null
+    }
+
     fun status(currentTime: Instant) = when {
         doneAt == null && currentTime.isAfter(dueAt) -> PAST_DUE
         doneAt == null -> NOT_DONE
