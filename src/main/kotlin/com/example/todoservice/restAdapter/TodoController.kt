@@ -54,10 +54,6 @@ class TodoController @Autowired constructor(
         return ResponseEntity.ok(TodoItemDto.from(todoItem, timeProvider.now()))
     }
 
-    companion object {
-        private val LOG = LoggerFactory.getLogger(TodoController::class.java)
-    }
-
     @PatchMapping("/{id}/mark_done", consumes = ["application/json"])
     fun markDone(@PathVariable id: UUID, @RequestBody dto: MarkDoneDto?) {
         LOG.debug("markDone id='{}', dto='{}'", id, dto)
@@ -78,5 +74,9 @@ class TodoController @Autowired constructor(
         LOG.debug("rephrase id='{}, newDescription='{}''", id, newDescription)
         todoService.rephrase(id, newDescription)
         LOG.info("rephrase successful. id='{}', newDescription='{}''", id, newDescription)
+    }
+
+    companion object {
+        private val LOG = LoggerFactory.getLogger(TodoController::class.java)
     }
 }
