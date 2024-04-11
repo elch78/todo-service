@@ -224,18 +224,26 @@ class TodoControllerTest @Autowired constructor(
 
         // When
         createTodoItem(DUE)
-        mvc.perform(patch("/todos/$id/rephrase")
-            .contentType("application/json")
-            .content("""
-                {
-                    "newDescription": "$newDescription"
-                }
-            """.trimIndent()))
+        rephrase(id, newDescription)
             .andExpect(status().isOk)
 
         // Then
         getTodoItem(id)
             .andExpect(jsonPath("$.description", `is`("$newDescription")))
+    }
+
+    @Test
+    fun rephraseShouldReturn409IfDueDateIsInThePast() {
+        // Given
+        val id = UUID.randomUUID()
+        whenever(uuidProvider.randomUuid()).thenReturn(id)
+        withCurrentTime(NOW)
+
+        // When
+        createTodoItem(DUE)
+        withCurrentTime(DUE.plus(1, MINUTES))
+        rephrase(id, "dontCare")
+            .andExpect(status().isConflict)
     }
 
     private fun withCurrentTime(currentTime: Instant?) {
@@ -276,6 +284,18 @@ class TodoControllerTest @Autowired constructor(
                 """
                     {
                         "doneAt": null
+                    }
+                """.trimIndent()
+            )
+    )
+
+    private fun rephrase(id: UUID?, newDescription: String) = mvc.perform(
+        patch("/todos/$id/rephrase")
+            .contentType("application/json")
+            .content(
+                """
+                    {
+                        "newDescription": "$newDescription"
                     }
                 """.trimIndent()
             )
