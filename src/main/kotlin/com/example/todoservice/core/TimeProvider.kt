@@ -1,9 +1,9 @@
 package com.example.todoservice.core
 
 import org.springframework.stereotype.Component
-import java.util.*
+import java.time.Instant
 
 @Component
-class UuidProvider {
-    fun randomUuid() = UUID.randomUUID()
+class TimeProvider {
+    fun now() = Instant.now()
 }

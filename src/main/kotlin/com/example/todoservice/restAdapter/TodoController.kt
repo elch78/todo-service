@@ -1,6 +1,6 @@
 package com.example.todoservice.restAdapter
 
-import com.example.todoservice.TimeProvider
+import com.example.todoservice.core.TimeProvider
 import com.example.todoservice.core.TodoItem
 import com.example.todoservice.core.TodoRepository
 import com.example.todoservice.core.UuidProvider
