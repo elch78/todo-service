@@ -1,9 +1,12 @@
 package com.example.todoservice
 
 import com.example.todoservice.core.TimeProvider
+import com.example.todoservice.core.TodoItemStatus
+import com.example.todoservice.core.TodoItemStatus.DONE
 import com.example.todoservice.core.TodoRepository
 import com.example.todoservice.core.UuidProvider
 import org.hamcrest.Matchers.endsWith
+import org.hamcrest.Matchers.`is`
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -15,9 +18,11 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -98,7 +103,7 @@ class TodoControllerTest @Autowired constructor(
 
         // When
         createTodoItem(DUE)
-        mvc.perform(get("/todos/$id"))
+        getTodoItem(id)
             .andExpect(status().isOk)
             .andExpect(content().json("""
                 {
@@ -120,10 +125,38 @@ class TodoControllerTest @Autowired constructor(
         val id = UUID.randomUUID()
 
         // When
-        mvc.perform(get("/todos/$id"))
+        getTodoItem(id)
             .andExpect(status().isNotFound)
 
         // Then
+    }
+
+    @Test
+    fun markDoneHappyCase() {
+        // Given
+        val id = UUID.randomUUID()
+        whenever(uuidProvider.randomUuid()).thenReturn(id)
+        whenever(timeProvider.now()).thenReturn(NOW)
+
+        // When
+        createTodoItem(DUE)
+        mvc.perform(patch("/todos/$id/mark_done")
+            .contentType("application/json")
+            .content("""
+                {
+                    "doneAt": null
+                }
+            """.trimIndent()))
+            .andExpect(status().isOk)
+        expectTodoItemStatus(id, DONE, NOW)
+
+        // Then
+    }
+
+    private fun expectTodoItemStatus(id: UUID, status: TodoItemStatus, doneAt: Instant?) {
+        getTodoItem(id)
+            .andExpect(jsonPath("$.status", `is`("$status")))
+            .andExpect(jsonPath("$.doneAt", `is`("$doneAt")))
     }
 
     private fun createTodoItem(due: Instant) =
@@ -141,6 +174,9 @@ class TodoControllerTest @Autowired constructor(
             .contentType("application/json")
             .content(content)
     )
+
+
+    private fun getTodoItem(id: UUID?) = mvc.perform(get("/todos/$id"))
 
     companion object {
         private val NOW = Instant.now().truncatedTo(ChronoUnit.MILLIS)
