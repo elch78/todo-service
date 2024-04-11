@@ -59,12 +59,6 @@ class TodoService @Autowired constructor(
         LOG.info("markDone successful id='{}'", id)
     }
 
-    private fun checkDueDate(todoItem: TodoItem) {
-        if(todoItem.dueAt.isBefore(timeProvider.now())) {
-            throw ErrorResponseException(CONFLICT, ProblemDetail.forStatusAndDetail(CONFLICT, "Todo item may not be changed past due date: ${todoItem.dueAt}"), null)
-        }
-    }
-
     @Transactional
     fun markUndone(id: UUID) {
         LOG.debug("markUndone id='{}'", id)
@@ -76,6 +70,12 @@ class TodoService @Autowired constructor(
         todoItem.markUndone()
         repo.save(todoItem)
         LOG.info("markUndone successful id='{}'", id)
+    }
+
+    private fun checkDueDate(todoItem: TodoItem) {
+        if(todoItem.dueAt.isBefore(timeProvider.now())) {
+            throw ErrorResponseException(CONFLICT, ProblemDetail.forStatusAndDetail(CONFLICT, "Todo item may not be changed past due date: ${todoItem.dueAt}"), null)
+        }
     }
 
     companion object {
