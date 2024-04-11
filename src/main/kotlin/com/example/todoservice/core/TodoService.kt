@@ -62,8 +62,8 @@ class TodoService @Autowired constructor(
     @Transactional
     fun markUndone(id: UUID) {
         LOG.debug("markUndone id='{}'", id)
-        // FIXME not found
-        val todoItem = findById(id).get()
+        val todoItem = findById(id)
+            .orElseThrow{ErrorResponseException(NOT_FOUND, ProblemDetail.forStatusAndDetail(NOT_FOUND, "Todo item not found: $id"), null)}
 
         checkDueDate(todoItem)
 
