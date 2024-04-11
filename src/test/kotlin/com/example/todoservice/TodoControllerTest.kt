@@ -149,6 +149,17 @@ class TodoControllerTest @Autowired constructor(
     }
 
     @Test
+    fun markDoneShouldReturn404IfTodoItemDoesNotExist() {
+        // Given
+        val id = UUID.randomUUID()
+        whenever(uuidProvider.randomUuid()).thenReturn(id)
+        withCurrentTime(NOW)
+
+        // When
+        markDone(id).andExpect(status().isNotFound)
+    }
+
+    @Test
     fun markDoneShouldReturn409IfDueDateIsInThePast() {
         // Given
         val id = UUID.randomUUID()
