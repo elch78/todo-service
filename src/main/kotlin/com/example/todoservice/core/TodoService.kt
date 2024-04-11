@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.ProblemDetail
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.ErrorResponseException
 import java.time.Instant
 import java.util.*
@@ -15,7 +16,9 @@ class TodoService @Autowired constructor(
     private val timeProvider: TimeProvider,
     private val uuidProvider: UuidProvider,
 ) {
+    @Transactional
     fun new(description: String, dueAt: Instant): TodoItem {
+        LOG.debug("new description='{}', dueAt='{}'", description, dueAt)
         val now = timeProvider.now()
 
         if(dueAt.isBefore(now)) {
@@ -29,29 +32,36 @@ class TodoService @Autowired constructor(
             dueAt = dueAt,
         )
         repo.new(todoItem)
+        LOG.info("new successful todoItem='{}'", todoItem)
 
         return todoItem
     }
 
     fun findById(id: UUID): Optional<TodoItem> {
+        LOG.debug("findById id='{}'", id)
         val todoItem = repo.findById(id)
+        LOG.info("findById successful id='{}', todoItem='{}'", id, todoItem)
         return todoItem
     }
 
+    @Transactional
     fun markDone(id: UUID, doneAt: Instant?) {
+        LOG.debug("markDone id='{}', doneAt='{}'", id, doneAt)
         // FIXME not found
-        // FIXME read + write requires transaction
         val todoItem = findById(id).get()
         todoItem.markDone(doneAt?:timeProvider.now())
         repo.save(todoItem)
+        LOG.info("markDone successful id='{}'", id)
     }
 
+    @Transactional
     fun markUndone(id: UUID) {
+        LOG.debug("markUndone id='{}'", id)
         // FIXME not found
-        // FIXME read + write requires transaction
         val todoItem = findById(id).get()
         todoItem.markUndone()
         repo.save(todoItem)
+        LOG.info("markUndone successful id='{}'", id)
     }
 
     companion object {
