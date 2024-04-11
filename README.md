@@ -1,7 +1,8 @@
 # Todolist Demo
 
 This is a recruiting assignment using Spring Boot framework to implement a simple todo
-list service. Adapters for REST and Spring Data JDBC are provided.
+list service. Adapters for REST and Spring Data JDBC are provided. The database schema
+is managed with Flyway (see `src/main/resources/db`).
 
 # Prerequisits
 
