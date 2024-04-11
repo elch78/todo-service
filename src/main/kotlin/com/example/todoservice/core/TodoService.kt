@@ -69,6 +69,9 @@ class TodoService @Autowired constructor(
         LOG.debug("markUndone id='{}'", id)
         // FIXME not found
         val todoItem = findById(id).get()
+
+        checkDueDate(todoItem)
+
         todoItem.markUndone()
         repo.save(todoItem)
         LOG.info("markUndone successful id='{}'", id)
