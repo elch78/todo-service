@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.DAYS
+import java.time.temporal.ChronoUnit.MINUTES
 import java.util.*
 import java.util.stream.Stream
 
@@ -143,6 +144,23 @@ class TodoControllerTest @Autowired constructor(
         createTodoItem(DUE)
         markDone(id).andExpect(status().isOk)
         expectTodoItemStatus(id, DONE, NOW)
+
+        // Then
+    }
+
+    @Test
+    fun markDoneShouldReturn409IfDueDateIsInThePast() {
+        // Given
+        val id = UUID.randomUUID()
+        whenever(uuidProvider.randomUuid()).thenReturn(id)
+        whenever(timeProvider.now()).thenReturn(NOW)
+
+        // When
+        createTodoItem(DUE)
+
+        // Given
+        whenever(timeProvider.now()).thenReturn(DUE.plus(1, MINUTES))
+        markDone(id).andExpect(status().isConflict)
 
         // Then
     }
