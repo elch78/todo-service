@@ -214,6 +214,29 @@ class TodoControllerTest @Autowired constructor(
             .andExpect(status().isNotFound)
     }
 
+    @Test
+    fun rephraseHappyCase() {
+        // Given
+        val id = UUID.randomUUID()
+        val newDescription = "newDescription"
+        whenever(uuidProvider.randomUuid()).thenReturn(id)
+        withCurrentTime(NOW)
+
+        // When
+        createTodoItem(DUE)
+        mvc.perform(patch("/todos/$id/rephrase")
+            .content("""
+                {
+                    "description": "$newDescription"
+                }
+            """.trimIndent()))
+            .andExpect(status().isOk)
+        getTodoItem(id)
+            .andExpect(jsonPath("$.description", `is`("$newDescription")))
+
+        // Then
+    }
+
     private fun withCurrentTime(currentTime: Instant?) {
         whenever(timeProvider.now()).thenReturn(currentTime)
     }
