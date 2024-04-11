@@ -11,6 +11,8 @@ spring:
     flyway:
       enabled: true
 debug: false
+# suppress info log for rest adapter to avoid duplicate logs
+logging.level.com.example.todoservice.restAdapter: WARN
 
 
 
