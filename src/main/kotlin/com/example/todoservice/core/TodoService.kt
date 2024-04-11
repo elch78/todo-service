@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CONFLICT
+import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ProblemDetail
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -48,8 +49,8 @@ class TodoService @Autowired constructor(
     @Transactional
     fun markDone(id: UUID, doneAt: Instant?) {
         LOG.debug("markDone id='{}', doneAt='{}'", id, doneAt)
-        // FIXME not found
-        val todoItem = findById(id).get()
+        val todoItem = findById(id)
+            .orElseThrow{ErrorResponseException(NOT_FOUND, ProblemDetail.forStatusAndDetail(NOT_FOUND, "Todo item not found: $id"), null)}
 
         checkDueDate(todoItem)
 
