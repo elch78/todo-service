@@ -90,8 +90,12 @@ class TodoService @Autowired constructor(
         ErrorResponseException(httpStatus, ProblemDetail.forStatusAndDetail(httpStatus, detail), null)
 
     private fun checkDueDate(todoItem: TodoItem) {
-        if(todoItem.dueAt.isBefore(timeProvider.now())) {
-            throw ErrorResponseException(CONFLICT, ProblemDetail.forStatusAndDetail(CONFLICT, "Todo item may not be changed past due date: ${todoItem.dueAt}"), null)
+        val dueAt = todoItem.dueAt
+        val now = timeProvider.now()
+        val dueAtInThePast = dueAt.isBefore(now)
+        LOG.debug("checkDueDate dueAt='{}', now='{}', dueAtInThePast='{}'", dueAt, now, dueAtInThePast)
+        if(dueAtInThePast) {
+            throw ErrorResponseException(CONFLICT, ProblemDetail.forStatusAndDetail(CONFLICT, "Todo item may not be changed past due date: $dueAt"), null)
         }
     }
 
