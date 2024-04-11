@@ -12,6 +12,7 @@ import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.web.ErrorResponseException
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -68,5 +69,13 @@ class TodoController @Autowired constructor(
 
     companion object {
         private val LOG = LoggerFactory.getLogger(TodoController::class.java)
+    }
+
+    @PatchMapping("/{id}/mark_done", consumes = ["application/json"])
+    fun markDone(@PathVariable id: UUID, @RequestBody dto: MarkDoneDto?) {
+        LOG.debug("markDone id='{}', dto='{}'", id, dto)
+        val doneAt = dto?.doneAt?: timeProvider.now()
+        LOG.debug("markDone doneAt='{}'", doneAt)
+        repo.markDone(id, doneAt)
     }
 }

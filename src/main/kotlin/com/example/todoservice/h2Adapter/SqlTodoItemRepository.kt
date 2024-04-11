@@ -4,6 +4,7 @@ import com.example.todoservice.core.TodoItem
 import com.example.todoservice.core.TodoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.time.Instant
 import java.util.*
 
 @Component
@@ -15,4 +16,8 @@ class SqlTodoItemRepository @Autowired constructor(
     }
 
     override fun findById(id: UUID): Optional<TodoItem> = repository.findById(id)
+
+    override fun markDone(id: UUID, doneAt: Instant) {
+        repository.markDone(id, doneAt)
+    }
 }
