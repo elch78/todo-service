@@ -233,7 +233,7 @@ class TodoControllerTest @Autowired constructor(
             .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$", hasSize<Any>(2)))
             .andExpect(jsonPath("$[0].id", equalTo("$id1")))
-            .andExpect(jsonPath("$[1].id", equalTo("$id1")))
+            .andExpect(jsonPath("$[1].id", equalTo("$id2")))
 
         // Then
     }

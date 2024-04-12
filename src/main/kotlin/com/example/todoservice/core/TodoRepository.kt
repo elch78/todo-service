@@ -6,4 +6,5 @@ interface TodoRepository {
     fun new(todo: TodoItem)
     fun save(todoItem: TodoItem)
     fun findById(id: UUID): Optional<TodoItem>
+    fun findAll(): Iterable<TodoItem>
 }

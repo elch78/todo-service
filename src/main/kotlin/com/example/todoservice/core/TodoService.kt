@@ -47,6 +47,13 @@ class TodoService @Autowired constructor(
         return todoItem
     }
 
+    fun list(): Iterable<TodoItem> {
+        LOG.debug("list")
+        val todoItems = repo.findAll()
+        LOG.info("list successful.")
+        return todoItems
+    }
+
     @Transactional
     fun markDone(id: UUID, doneAt: Instant?) {
         LOG.debug("markDone id='{}', doneAt='{}'", id, doneAt)

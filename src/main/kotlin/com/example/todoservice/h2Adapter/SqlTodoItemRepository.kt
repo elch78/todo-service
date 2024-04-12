@@ -15,6 +15,8 @@ class SqlTodoItemRepository @Autowired constructor(
     }
 
     override fun findById(id: UUID): Optional<TodoItem> = repository.findById(id)
+    override fun findAll(): Iterable<TodoItem> = repository.findAll()
+
     override fun save(todoItem: TodoItem) {
         repository.save(todoItem)
     }

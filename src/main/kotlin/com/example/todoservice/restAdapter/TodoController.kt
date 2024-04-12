@@ -1,6 +1,7 @@
 package com.example.todoservice.restAdapter
 
 import com.example.todoservice.core.TimeProvider
+import com.example.todoservice.core.TodoItem
 import com.example.todoservice.core.TodoService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -52,6 +53,14 @@ class TodoController @Autowired constructor(
             .orElseThrow { ErrorResponseException(HttpStatus.NOT_FOUND, ProblemDetail.forStatusAndDetail(BAD_REQUEST, "No todo item with id $id" ), null) }
         LOG.info("get successful. id='{}'", id)
         return ResponseEntity.ok(TodoItemDto.from(todoItem, timeProvider.now()))
+    }
+
+    @GetMapping(produces = ["application/json"])
+    fun list(): ResponseEntity<List<TodoItem>> {
+        LOG.debug("list")
+        val todoItems = todoService.list()
+        return ResponseEntity.ok(todoItems.toList())
+        LOG.info("list successful.")
     }
 
     @PatchMapping("/{id}/mark_done", consumes = ["application/json"])
