@@ -4,7 +4,6 @@ import com.example.todoservice.core.TimeProvider
 import com.example.todoservice.core.TodoItemStatus
 import com.example.todoservice.core.TodoItemStatus.DONE
 import com.example.todoservice.core.TodoItemStatus.NOT_DONE
-import com.example.todoservice.core.TodoRepository
 import com.example.todoservice.core.UuidProvider
 import org.hamcrest.Matchers.endsWith
 import org.hamcrest.Matchers.equalTo
@@ -46,7 +45,6 @@ import java.util.stream.Stream
 @Rollback
 class TodoControllerTest @Autowired constructor(
     private val mvc: MockMvc,
-    private val repo: TodoRepository,
     @MockBean
     private val timeProvider: TimeProvider,
     @MockBean
