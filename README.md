@@ -6,7 +6,7 @@ is managed with Flyway (see `src/main/resources/db`).
 
 # Prerequisits
 
-- Java 17+ installed
+- Java 21+ installed
 
 # Build
 
@@ -14,9 +14,7 @@ is managed with Flyway (see `src/main/resources/db`).
 
 # Run
 
-The standard Spring Boot mechanism
-
-either
+The standard Spring Boot mechanism either
 
 `mvn spring-boot:run`
 
