@@ -20,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -228,14 +229,32 @@ class TodoControllerTest @Autowired constructor(
         createTodoItem(DUE)
         createTodoItem(DUE)
         markDone(id2)
-        mvc.perform(get("/todos"))
+        listTodoItems()
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$", hasSize<Any>(2)))
             .andExpect(jsonPath("$[0].id", equalTo("$id1")))
             .andExpect(jsonPath("$[1].id", equalTo("$id2")))
+    }
 
-        // Then
+    @Test
+    fun listFilteredForNotDoneHappyCase() {
+        // Given
+        val id1 = UUID.randomUUID()
+        val id2 = UUID.randomUUID()
+        val id3 = UUID.randomUUID()
+        whenever(uuidProvider.randomUuid()).thenReturn(id1, id2, id3)
+        withCurrentTime(NOW)
+
+        // When
+        createTodoItem(DUE)
+        markDone(id1)
+        createTodoItem(DUE)
+        createTodoItem(DUE)
+        listTodoItems(true)
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$", hasSize<Any>(2)))
+            .andExpect(jsonPath("$[0].id", equalTo("$id2")))
+            .andExpect(jsonPath("$[1].id", equalTo("$id3")))
     }
 
     @Test
@@ -268,6 +287,14 @@ class TodoControllerTest @Autowired constructor(
         withCurrentTime(DUE.plus(1, MINUTES))
         rephrase(id, "dontCare")
             .andExpect(status().isConflict)
+    }
+
+    private fun listTodoItems(notDoneOnly: Boolean = false): ResultActions {
+        val listTodos = get("/todos")
+        if(notDoneOnly) {
+            listTodos.param("notDoneOnly", "true")
+        }
+        return mvc.perform(listTodos)
     }
 
     private fun withCurrentTime(currentTime: Instant?) {
