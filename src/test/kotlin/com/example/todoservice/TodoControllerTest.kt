@@ -7,6 +7,8 @@ import com.example.todoservice.core.TodoItemStatus.NOT_DONE
 import com.example.todoservice.core.TodoRepository
 import com.example.todoservice.core.UuidProvider
 import org.hamcrest.Matchers.endsWith
+import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.`is`
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -212,6 +214,28 @@ class TodoControllerTest @Autowired constructor(
         // When
         markUndone(id)
             .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun listAllHappyCase() {
+        // Given
+        val id1 = UUID.randomUUID()
+        val id2 = UUID.randomUUID()
+        whenever(uuidProvider.randomUuid()).thenReturn(id1, id2)
+        withCurrentTime(NOW)
+
+        // When
+        createTodoItem(DUE)
+        createTodoItem(DUE)
+        markDone(id2)
+        mvc.perform(get("/todos"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$").isArray)
+            .andExpect(jsonPath("$", hasSize<Any>(2)))
+            .andExpect(jsonPath("$[0].id", equalTo("$id1")))
+            .andExpect(jsonPath("$[1].id", equalTo("$id1")))
+
+        // Then
     }
 
     @Test
