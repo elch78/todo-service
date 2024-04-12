@@ -47,9 +47,9 @@ class TodoService @Autowired constructor(
         return todoItem
     }
 
-    fun list(): Iterable<TodoItem> {
+    fun list(notDoneOnly: Boolean?): Iterable<TodoItem> {
         LOG.debug("list")
-        val todoItems = repo.findAll()
+        val todoItems = repo.findAll(notDoneOnly?:false)
         LOG.info("list successful.")
         return todoItems
     }

@@ -13,4 +13,6 @@ interface TodoItemCrudRepository: CrudRepository<TodoItem, UUID> {
     @Modifying
     @Query(value = "INSERT INTO todo_item (id, description, created_at, due_at) VALUES (:id, :description, :createdAt, :dueAt)")
     fun insert(@Param("id") id: UUID, @Param("description") description: String, @Param("createdAt") createdAt: Instant, @Param("dueAt")dueAt: Instant)
+
+    fun findByDoneAtIsNull(): Iterable<TodoItem>
 }

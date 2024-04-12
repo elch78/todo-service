@@ -56,9 +56,9 @@ class TodoController @Autowired constructor(
     }
 
     @GetMapping(produces = ["application/json"])
-    fun list(): ResponseEntity<List<TodoItem>> {
+    fun list(notDoneOnly: Boolean?): ResponseEntity<List<TodoItem>> {
         LOG.debug("list")
-        val todoItems = todoService.list()
+        val todoItems = todoService.list(notDoneOnly)
         return ResponseEntity.ok(todoItems.toList())
         LOG.info("list successful.")
     }

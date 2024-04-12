@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.annotation.Rollback
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -28,6 +29,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.DAYS
@@ -37,6 +39,11 @@ import java.util.stream.Stream
 
 @SpringBootTest
 @AutoConfigureMockMvc
+// Transactional + Rollback
+// to achieve the same behavior as a DataJdbcTest (every test transaction is rolled back to avoid interferance)
+// mainly for the list tests which would interfere with each other
+@Transactional
+@Rollback
 class TodoControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val repo: TodoRepository,
