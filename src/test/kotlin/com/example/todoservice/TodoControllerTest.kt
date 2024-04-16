@@ -36,6 +36,9 @@ import java.time.temporal.ChronoUnit.MINUTES
 import java.util.*
 import java.util.stream.Stream
 
+/**
+ * Test the todo-api end to end
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 // Transactional + Rollback
