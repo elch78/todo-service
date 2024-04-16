@@ -2,7 +2,8 @@
 
 This is a recruiting assignment using Spring Boot framework to implement a simple todo
 list service. Adapters for REST and Spring Data JDBC are provided. The database schema
-is managed with Flyway (see `src/main/resources/db`).
+is managed with Flyway (see `src/main/resources/db`). Maven wrapper for environment
+independent building.
 
 # Prerequisits
 
@@ -10,13 +11,13 @@ is managed with Flyway (see `src/main/resources/db`).
 
 # Build
 
-`mvn clean package`
+`./mvnw clean package`
 
 # Run
 
 The standard Spring Boot mechanism either
 
-`mvn spring-boot:run`
+`./mvnw spring-boot:run`
 
 or
 
