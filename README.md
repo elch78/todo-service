@@ -5,6 +5,11 @@ list service. Adapters for REST and Spring Data JDBC are provided. The database 
 is managed with Flyway (see `src/main/resources/db`). Maven wrapper for environment
 independent building.
 
+Assumptions:
+
+- list is short enough that we don't need pagination. The index on the database table
+to support the filter was added nonetheless.
+
 # Prerequisits
 
 - Java 21+ installed
